@@ -19,8 +19,8 @@ let mysql = require('mysql');
 let con = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: 'TipuTopakka92',
-  database: 'todo',
+  password: '',
+  database: 'todo2',
 });
 
 con.connect(error => {
