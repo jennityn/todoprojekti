@@ -1,18 +1,26 @@
 <template>
-  <h1>Vue todo app</h1>
-  <div class="navBar">
-    <button class="showDivs" @click="showDivAdd()">addaussivu</button>
-    &nbsp;&nbsp;&nbsp;
-    <button class="showDivs" @click="showDivAll()">kaikki tähän</button>
+  <div id="upper">
+    <h1 id="header">TO-DO</h1>
+    <div id="date">Date: {{ currentDate() }}</div>
   </div>
 
+  <div class="navBar">
+    <button class="showDivs" @click="showDivAdd()">TODAY</button>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    <button class="showDivs" @click="showDivAll()">HISTORY</button>
+  </div>
 
-  <div id="addDiv">
+  <div class="divs" id="addDiv">
     <form @submit.prevent="addNewTodo">
-      <div id="currentDate">Date: {{ currentDate() }}</div>
-      <label>TO-DO</label>
-      <input v-model="newToDo" type="text" placeholder="Add a new task" name="newTodo" maxlength="200">
-      <button>Add new todo</button>
+
+      <label id="today">TODAY'S TASKS</label>
+      <div id="currentDate">{{ currentDate() }}</div>
+      <input type="text" id="addNew" v-model="newToDo" placeholder="Add a new task"
+             name="newTodo"
+             :maxlength="max">
+      <button id="addBtn">+</button>
+      <div class="totalChar" v-text="(max - newToDo.length)"></div>
+
     </form>
 
     <ul>
@@ -20,22 +28,24 @@
         <div :class="{ done: todo.done }" @click="toggleDone(todo)">
           {{ todo.content }}
         </div>
-        <button class="removeItem" @click="removeToDo(index)">x</button>
+        <button class="removeItem" @click="removeToDo(index)">X</button>
       </li>
     </ul>
 
-    <button @click="markAllDone">Mark All Done</button>
+    <button class="massButtons" @click="markAllDone">All Done</button>
     &nbsp;&nbsp;&nbsp;
-    <button @click="removeAll">Remove All</button>
+    <button class="massButtons" @click="removeAll">Remove All</button>
+    &nbsp;&nbsp;&nbsp;
+    <button class="massButtons">Save</button>
   </div>
 
-  <div id="allDiv">
+  <div class="divs" id="allDiv">
     <div id="search">
-      <label for="startingDate">From:</label>
-      <input type="week" id="startingDate" name="startingDate">
-      <label for="endingDate">To:</label>
-      <input type="week" id="endingDate" name="endingDate">
-      <input @click="makeQuery()" type="button" value="Lähetä" id="submit">
+      <label class="labels" for="startingDate">From:</label>
+      <input class="selectDate" type="week" id="startingDate" name="startingDate">
+      <label class="labels" for="endingDate">To:</label>
+      <input class="selectDate" type="week" id="endingDate" name="endingDate">
+      <input @click="makeQuery()" type="button" value="Search" id="submit">
       <div id="divElement">
 
       </div>
@@ -56,6 +66,7 @@ export default {
   components: {},
 
   setup() {
+    let max = 200;
     const newToDo = ref('');
     const todos = ref([]);
     const allTodos = ref([]);
@@ -156,7 +167,7 @@ export default {
         listElement.appendChild(nestedElement);
         unNestedElement = document.createElement('li');
         unNestedElement.setAttribute('class', 'del');
-        string = json.rows[i].Paiva_id+ ', ' + json.rows[i].Kuvaus + ', ' + json.rows[i].Tehty;
+        string = json.rows[i].Paiva_id + ', ' + json.rows[i].Kuvaus + ', ' + json.rows[i].Tehty;
         unNestedElement.innerHTML = string;
         nestedElement.appendChild(unNestedElement);
       }
@@ -166,6 +177,7 @@ export default {
       todos,
       newToDo,
       allTodos,
+      max,
       addNewTodo,
       toggleDone,
       removeToDo,

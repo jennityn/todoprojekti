@@ -20,7 +20,7 @@ let path = require('path');
 let con = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: 'TipuTopakka92',
+  password: '',
   database: 'todo',
 });
 const query = util.promisify(con.query).bind(con);

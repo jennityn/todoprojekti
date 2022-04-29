@@ -1,26 +1,117 @@
 body {
+    background-color: #CFBFB5;
+    max-width: 600px;
+    margin: auto;
     display: flex;
-    font-family: Avenir, Helvetica, Arial, sans-serif;
+    font-family: 'Montserrat', sans-serif;
     padding-top: 1em;
     padding-bottom: 1em;
     font-size: 2em;
     width: 80%;
-    margin: 0 auto;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-align: center;
     color: #2c3e50;
+
 }
-input, textarea, p, div, section, article, select {
+#upper {
+    border-bottom-style: solid;
+    border-bottom-width: thick;
+    border-color: #5E6B6E;
+    width: 600px;
+    height: 259px;
+    background-image: url("assets/mtnimgsmall2.jpg");
+    box-shadow: 20px 20px 50px grey;
+}
+
+
+#addNew {
+    margin-bottom: 0;
+    font-size: 25px;
+    padding: 5px;
+    border-color: gainsboro;
+    border-style: solid;
+}
+
+.totalChar {
+    font-size: 18px;
+    margin-left: 30px;
+    float: left;
+    color: #b7b4b4;
+}
+
+.divs {
+    text-align: center;
     width: 100%;
+    font-size: 1em;
+    padding: 50px 0;
+    background-color: white;
+    box-shadow: 20px 20px 50px grey;
+}
+
+input, textarea, p, section, article, select {
+    font-family: 'Montserrat', sans-serif;
+    width: 80%;
     font-size: 1em;
     margin: 0.5em;
 }
+ul {
+    margin-top: 60px;
+    margin-bottom: 40px;
+}
+
+li {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 20px;
+    margin-right: 40px;
+    padding: 5px 20px;
+    border-bottom-style: solid;
+    border-bottom-width: thin;
+    border-bottom-color: #b7b4b4;
+}
+
+.navBar{
+    background-color: #7B8B8B;
+    box-shadow: 20px 20px 50px grey;
+}
+
+#date{
+    float: right;
+    color: white;
+    margin-right: 20px;
+    font-size: 25px;
+}
+
+#currentDate{
+    font-size: 18px;
+    color: #b7b4b4;
+    margin-top: 10px;
+    margin-bottom: 20px;
+}
+
+#addBtn {
+    border-radius: 50px;
+    width: 45px;
+    margin-right: 10px;
+    cursor: pointer;
+    background-color: #7B8B8B;
+    border: none;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 30px;
+}
+
+#addBtn:hover {
+    background-color: #748889;
+}
+
 button {
     font-size: 1em;
-    margin: 10px auto;
     display: inline-block;
     padding: 5px;
+    font-family: 'Montserrat', sans-serif;
 }
 
 .todo {
@@ -35,19 +126,83 @@ button {
     text-decoration: line-through;
     color: dimgray;
 }
-.removeItem{
-    width: 7%;
+
+.removeItem {
+    border-radius: 50px;
+    width: 33px;
     cursor: pointer;
-    background-color: #2c3e50; /* Green */
+    background-color: white;
     border: none;
-    color: white;
+    color: #7B8B8B;
     text-align: center;
     text-decoration: none;
     display: inline-block;
     font-size: 20px;
+    font-weight: bold;
+    box-shadow: -1px 0 gainsboro, 0 1px gainsboro, 1px 0 gainsboro, 0 -1px gainsboro;
+}
+
+.removeItem:hover {
+    background-color: gainsboro;
+}
+
+
+.showDivs {
+    float: bottom;
+    background-color: #7B8B8B;
+    font-size: 17px;
+    color: white;
+    border-style: none;
+    cursor: pointer;
+    height: 50px;
+}
+
+.showDivs:hover {
+    background-color: #5E6B6E;
+}
+
+#header {
+    margin: 30px 200px 120px 15px;
+    float: left;
+    color: white;
+    font-weight: lighter;
+    text-shadow: -1px 0 #748889, 0 1px #748889, 1px 0 #748889, 0 -1px #748889;
+}
+
+.massButtons {
+    background-color: #7B8B8B;
+    font-size: 20px;
+    margin-top: 60px;
+    color: white;
+    border-style: none;
+    cursor: pointer;
+    width: 140px;
+    height: 50px;
+}
+
+.massButtons:hover {
+    background-color: #5E6B6E;
 
 }
-.showDivs{
-    color: red;
+.labels {
+    font-size: 25px;
+}
+
+.selectDate {
+    font-size: 25px;
+    width: 150px;
+}
+
+#submit {
+    background-color: #7B8B8B;
+    font-size: 20px;
+    color: white;
+    border-style: none;
     cursor: pointer;
+    width: 140px;
+    height: 50px;
+    margin: 60px 100px 0px;
+}
+#submit:hover{
+    background-color: #5E6B6E;
 }
