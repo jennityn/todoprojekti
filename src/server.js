@@ -1,40 +1,46 @@
-let express = require('express');
-let app = express();
-let mysql = require('mysql');
-let util = require('util');
+const express = require('express');
+let bodyParser = require('body-parser');
+const cors = require('cors');
+const app = express();
+let corsOptions = {
+  origin: 'http://localhost:8081',
+};
+
+app.use(cors(corsOptions));
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({extended: true}));
+app.get('/', (req, res) => {
+  res.json({message: 'toimii'});
+});
+
 let url = require('url');
-let bodyparser = require('body-parser');
 
-let urlencodedParser = bodyparser.urlencoded({extended: false});
-app.use(bodyparser.urlencoded({extended: false}));
-app.use(bodyparser.json());
-
-/*app.use(function(req, res){
-  res.header("Access-Control_Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, ");
-  next();
-})*/
-
-let path = require('path');
-
+let mysql = require('mysql');
 let con = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: '',
+  password: 'TipuTopakka92',
   database: 'todo',
 });
-const query = util.promisify(con.query).bind(con);
 
-con.connect(function(err) {
-  if (err) throw err;
-  //con.query("SELECT * FROM event", function (err, result, fields) {
-  //if (err) throw err;
-  //console.log(result);
-  console.log('Connected');
-  //});
+con.connect(error => {
+  if (error) throw error;
+  console.log('Successfully connected to the database.');
 });
 
-app.get('/api/events', function(req, res) {
+let util = require('util');
+const query = util.promisify(con.query).bind(con);
+
+const PORT = process.env.PORT || 8081;
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}.`);
+});
+
+let urlencodedParser = bodyParser.urlencoded({extended: false});
+app.use(bodyParser.urlencoded({extended: false}));
+app.use(bodyParser.json());
+
+app.get('/api/todos', function(req, res) {
   console.log('Get tasks from a certain period');
   let q = url.parse(req.url, true).query;
   let params = q.start + ' ' + q.end;
@@ -42,15 +48,14 @@ app.get('/api/events', function(req, res) {
   let endDate = q.end;
   let alteredResult;
   let string;
-  console.log('Parametrit:' + startDate + ' ' + endDate);
+  console.log('Parametrit:' + params);
 
-  let sql = 'SELECT event_date.Date, event.Name, event.Type, Location.Location_name'
-      + ' FROM event_date, event, location'
+  let sql = 'SELECT task.week_id, task.description, task.done'
+      + ' FROM task, week'
       +
-      ' WHERE event_date.Event_id = event.Event_id and event.Location_Location_id = Location.Location_id'
-      + ' and event_date.Date >= ? and event_date.Date <= ?'
-      + ' GROUP BY Name'
-      + ' ORDER BY event_date.Date';
+      ' WHERE task.week_id >= ? and task.week_id >= ?'
+      + ' GROUP BY task.description '
+      + ' ORDER BY task.week_id';
 
   (async () => { // IIFE (Immediately Invoked Function Expression)
     try {
@@ -68,6 +73,59 @@ app.get('/api/events', function(req, res) {
     }
   })();
 });
+
+app.post('/api/add', urlencodedParser, function(req, res) {
+  let jsonObj = req.body;
+  let responseString = JSON.stringify(jsonObj);
+
+  let sql = 'INSERT INTO task (task_id, week_id, description, done)'
+      + ' VALUES (?, ?, ?, ?)';
+  (async () => {
+    try {
+      await query(sql, [
+        jsonObj.taskId,
+        jsonObj.weekId,
+        jsonObj.taskDescription,
+        jsonObj.taskDone
+        ]);
+
+      res.send('POST succesful ' + responseString);
+
+    } catch (err) {
+      console.log('Insertion into some (2) table was unsuccessful!' + err);
+      res.send('POST was not succesful ' + err);
+    }
+
+  })();
+})
+;
+
+/*
+
+
+
+
+
+
+
+
+
+
+
+/*app.use(function(req, res){
+  res.header("Access-Control_Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, ");
+  next();
+})*/
+
+/*let path = require('path');
+
+
+const query = util.promisify(con.query).bind(con);
+
+
+
+
 
 app.get('/events', function(req, res) {
   res.sendFile(path.join(__dirname + '/server.html'));
@@ -119,75 +177,10 @@ app.post('/api/testingevent', urlencodedParser, function(req, res) {
   res.send('POST successful: ' + responseString);
 });
 
-app.post('/api/event', urlencodedParser, function(req, res) {
-  let jsonObj = req.body;
-  let responseString = JSON.stringify(jsonObj);
 
-  if (jsonObj.eventLocation > -1) { // is  a location place already present?
-    let sql = 'INSERT INTO event (Name, Type, Location_location_id)'
-        + ' VALUES ( ?, ?, ?)';
-    (async () => {  // IIFE (Immediately Invoked Function Expression)
-      try {
-        const result = await query(sql, [
-          jsonObj.eventName,
-          jsonObj.eventType,
-          jsonObj.eventLocation]);
 
-        let insertedId = result.insertId;
-        sql = 'INSERT INTO Event_date (Date, Event_id)'
-            + ' VALUES ( ?, ?)';
-        await query(sql, [jsonObj.eventDate, insertedId]);
-        res.send('POST succesful ' + req.body);
 
-      } catch (err) {
-        console.log('Insertion into some (2) table was unsuccessful!' + err);
-        res.send('POST was not succesful ' + err);
-      }
-
-    })();
-
-  } else {
-
-    let sql = 'INSERT INTO location (Location_name, Street_address, City, Zip, Country)'
-        + ' VALUES (?, ?, ?, ?, ?)';
-    (async () => {
-      try {
-        const resultLocation = await query(sql, [
-          jsonObj.locPlaceName,
-          jsonObj.locStreetAddress,
-          jsonObj.locCity,
-          jsonObj.locZip,
-          jsonObj.locCountry]);
-
-        let insertedLocationId = resultLocation.insertId;
-        sql = 'INSERT INTO event (Name, Type, Location_location_id)'
-            + ' VALUES ( ?, ?, ?)';
-        const resultEvent = await query(sql, [
-          jsonObj.eventName,
-          jsonObj.eventType,
-          insertedLocationId]);
-
-        let insertedEventId = resultEvent.insertId;
-
-        sql = 'INSERT INTO Event_date (Date, Event_id)'
-            + ' VALUES ( ?, ?)';
-        await query(sql, [jsonObj.eventDate, insertedEventId]);
-
-        res.send('POST succesful ' + req.body);
-
-      } catch (err) {
-        console.log('Insertion into some (2) table was unsuccessful!' + err);
-        res.send('POST was not succesful ' + err);
-      }
-
-    })();
-  }
-});
-
-let server = app.listen(8082, function() {
-  let host = server.address().address;
-  let port = server.address().port;
 
   console.log('Example app listening at http://%s:%s', host, port);
-});
+});*/
 

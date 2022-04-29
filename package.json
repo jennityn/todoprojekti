@@ -2,6 +2,7 @@
   "name": "projekti",
   "version": "0.1.0",
   "private": true,
+  "main": "babel.config.js",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
@@ -13,9 +14,11 @@
     "bootstrap-vue": "^2.22.0",
     "cookie-parser": "^1.4.6",
     "core-js": "^3.8.3",
+    "cors": "^2.8.5",
     "express": "^4.18.0",
     "multer": "^1.4.4",
     "mysql": "^2.18.1",
+    "sequelize": "^6.19.0",
     "vue": "^3.2.33",
     "vue-navigation-bar": "^5.0.0"
   },
@@ -47,5 +50,16 @@
     "last 2 versions",
     "not dead",
     "not ie 11"
-  ]
+  ],
+  "description": "## Project setup ``` npm install ```",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jennityn/todoprojekti.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jennityn/todoprojekti/issues"
+  },
+  "homepage": "https://github.com/jennityn/todoprojekti#readme"
 }

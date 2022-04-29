@@ -134,25 +134,22 @@ export default {
             if (json.numOfRows > 0) { // something found
               showList(json);
             } else {
-              document.getElementById('locationInfo').innerHTML = '<br/>No tasks found within this period.';
+              document.getElementById('divElement').innerHTML = '<br/>No tasks found within this period.';
             }
           }
         };
-        xmlhttp.open('GET', 'http://localhost:8082/api/events?start=' + startdate + '&end=' + enddate, true);
+        xmlhttp.open('GET', 'http://localhost:8082/api/todos?start=' + startdate + '&end=' + enddate, true);
         xmlhttp.send();
       }
     }
 
     function showList(json) {
-      //document.getElementById("locationInfo").innerHTML = "New text!";
       let divElement = document.getElementById('divElement');
-
       let i;
       let unOrdered;
       let listElement, nestedElement, unNestedElement;
       let string;
       for (i in json.rows) {
-        // create a form group div
         unOrdered = document.createElement('ul');
         unOrdered.setAttribute('class', 'del'); // mark all these dynamically created elements to be "deleted"
         divElement.appendChild(unOrdered);
@@ -167,7 +164,8 @@ export default {
         listElement.appendChild(nestedElement);
         unNestedElement = document.createElement('li');
         unNestedElement.setAttribute('class', 'del');
-        string = json.rows[i].Paiva_id + ', ' + json.rows[i].Kuvaus + ', ' + json.rows[i].Tehty;
+        string = json.rows[i].taskId + ', ' + json.rows[i].weekId + ', ' + json.rows[i].taskDescription
+            + ', ' + json.rows[i].taskDone;
         unNestedElement.innerHTML = string;
         nestedElement.appendChild(unNestedElement);
       }
