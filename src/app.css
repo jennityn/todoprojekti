@@ -17,8 +17,21 @@ body {
 
 
 #divElement {
-    margin-top: 0px;
+    margin-top: 100px;
     margin-bottom: 0px;
+    font-size: 12px;
+
+}
+
+.jsonListWeeks {
+    font-size: 15px;
+    color: red;
+    float: left;
+}
+
+.jsonListTasks {
+    font-size: 19px;
+
 }
 
 #upper {
@@ -62,19 +75,9 @@ input, textarea, p, section, article, select {
     font-size: 1em;
     margin: 0.5em;
 }
-ul {
+.todoList {
     margin-top: 60px;
     margin-bottom: 40px;
-}
-
-li {
-    font-family: 'Montserrat', sans-serif;
-    font-size: 20px;
-    margin-right: 40px;
-    padding: 5px 20px;
-    border-bottom-style: solid;
-    border-bottom-width: thin;
-    border-bottom-color: #b7b4b4;
 }
 
 .navBar{
@@ -127,6 +130,13 @@ button {
     display: flex;
     align-items: center;
     justify-content: space-between;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 20px;
+    margin-right: 40px;
+    padding: 5px 20px;
+    border-bottom-style: solid;
+    border-bottom-width: thin;
+    border-bottom-color: #b7b4b4;
 }
 
 .done {
@@ -212,4 +222,54 @@ button {
 }
 #submit:hover{
     background-color: #5E6B6E;
+}
+
+#ok {
+    display: none;
+    background-color: #7B8B8B;
+    font-size: 20px;
+    color: white;
+    border-style: none;
+    cursor: pointer;
+    width: 140px;
+    height: 50px;
+    margin: 60px 100px 0px;
+}
+
+#ok:hover{
+    background-color: #5E6B6E;
+}
+
+#saveMsg{
+    display: none;
+    margin-bottom: 12px;
+    align-items: center;
+    justify-content: space-between;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 25px;
+    margin-right: 0px;
+    margin-left: 100px;
+    padding: 5px 20px;
+
+
+}
+
+#saveOk{
+    display: none;
+    cursor: pointer;
+    background-color: white;
+    border: none;
+    width: 120px;
+    height: 50px;
+    margin-right: 100px;
+    color: #7B8B8B;
+    text-align: center;
+    text-decoration: none;
+    font-size: 20px;
+    box-shadow: -1px 0 gainsboro, 0 1px gainsboro, 1px 0 gainsboro, 0 -1px gainsboro;
+}
+
+#saveOk:hover {
+    background-color: #93bbbb;
+    color: white;
 }

@@ -23,7 +23,7 @@
 
     </form>
 
-    <ul>
+    <ul class="todoList" id="todoList">
       <li v-for="(todo, index) in todos" :key="todo.id" class="todo">
         <div :class="{ done: todo.done }" @click="toggleDone(todo)">
           {{ todo.description }}
@@ -31,13 +31,17 @@
         <button class="removeItem" @click="removeToDo(index)">X</button>
       </li>
     </ul>
+    <div id="saveMsg">Save successful!
+      <button @click="hideSaveMsg()" id="saveOk">Nice!</button>
+    </div>
 
     <button class="massButtons" @click="markAllDone">All Done</button>
     &nbsp;&nbsp;&nbsp;
     <button class="massButtons" @click="removeAll">Remove All</button>
     &nbsp;&nbsp;&nbsp;
-    <button class="massButtons" @click="saveAll">Save</button>
+    <button class="massButtons" @click="saveAll()">Save & Clear</button>
   </div>
+
 
   <div class="divs" id="allDiv">
     <div id="search">
@@ -49,6 +53,7 @@
       <div id="divElement">
 
       </div>
+      <input @click="clearPage()" type="button" value="Ok" id="ok">
     </div>
   </div>
 
@@ -65,12 +70,18 @@ export default {
   name: 'App',
   components: {},
 
+
   setup() {
     let max = 200;
     const newToDo = ref('');
     const todos = ref([]);
     const allTodos = ref([]);
     let todoValue = 0;
+
+    function hideSaveMsg(){
+      document.getElementById("saveMsg").style.display = 'none';
+      document.getElementById("saveOk").style.display = 'none';
+    }
 
     function showDivAdd() {
       let add = document.getElementById('addDiv');
@@ -101,7 +112,7 @@ export default {
       let weekNumber = Math.ceil(
           (currentDate.getDay() + 1 + days) / 7);
 
-      let stringWeek = "W"+weekNumber+"-"+currentDate.getFullYear();
+      let stringWeek = 'W' + weekNumber + '-' + currentDate.getFullYear();
       return stringWeek;
     }
 
@@ -110,7 +121,7 @@ export default {
         return;
       }
       todos.value.push({
-        id: Date.now(), //!!!HUOM!!!! tähän databaseen menevä id-muoto
+        id: Date.now(),
         week: currentWeek(),
         done: false,
         description: newToDo.value,
@@ -118,6 +129,7 @@ export default {
       console.log(todos.value);
       newToDo.value = '';
       todoValue++;
+      console.log('Current task count in list: ' + todoValue);
     }
 
     function toggleDone(todo) {
@@ -126,6 +138,7 @@ export default {
 
     function removeToDo(index) {
       todos.value.splice(index, 1);
+      todoValue--;
     }
 
     function markAllDone() {
@@ -137,29 +150,43 @@ export default {
     }
 
     function saveAll() {
-      let xmlhttp = new XMLHttpRequest();
-      xmlhttp.onreadystatechange = function() {
-        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-          json = JSON.parse(xmlhttp.responseText);
-            for (let i = 0; i < todos.value.length; i++) {
-              xmlhttp.open('POST', 'http://localhost:8081/api/add$%7Bid%7D', true);
-              xmlhttp.send();
-              i++;
+      let xhr = [];
+      for (let i = 0; i < todoValue; i++){
+        let id = todos.value[i].id;
+        (function(i) {
+          xhr[i] = new XMLHttpRequest();
+          xhr[i].open('POST', `http://localhost:8081/api/add/${id}`, true);
+          xhr[i].setRequestHeader('Content-type', 'application/json');
+          xhr[i].onreadystatechange = function() {
+            if (xhr[i].readyState == 4 && xhr[i].status == 200) {
+              console.log('pääsee funktioon');
             }
-          }
-        }
+          };
+          xhr[i].send(JSON.stringify(JSON.parse(JSON.stringify(todos.value[i]))));
+        })(i);
+      }
+      document.getElementById("saveMsg").style.display = 'flex';
+      document.getElementById("saveOk").style.display = 'inline-block';
+      todos.value = [];
+    }
+
+    function clearPage() {
+      document.getElementById("divElement").innerHTML ="";
+      document.getElementById("ok").style.display = 'none';
+      document.getElementById("submit").style.display = 'inline-block';
     }
 
     function makeQuery() {
       let startdate = document.getElementById('startingDate').value;
       let enddate = document.getElementById('endingDate').value;
-      if (startdate.length == 0) { // MUOKKAA TÄMÄ
+      if (startdate.length == 0) {
+        alert("Please choose valid dates");
         return;
       } else {
-        let xmlhttp = new XMLHttpRequest();
-        xmlhttp.onreadystatechange = function() {
-          if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
-            json = JSON.parse(xmlhttp.responseText);
+        let xrh = new XMLHttpRequest();
+        xrh.onreadystatechange = function() {
+          if (xrh.readyState == 4 && xrh.status == 200) {
+            json = JSON.parse(xrh.responseText);
             console.log(json);
 
             if (json.numOfRows > 0) { // something found
@@ -169,8 +196,10 @@ export default {
             }
           }
         };
-        xmlhttp.open('GET', 'http://localhost:8081/api/todos?start=' + startdate + '&end=' + enddate, true);
-        xmlhttp.send();
+        xrh.open('GET', 'http://localhost:8081/api/todos?start=' + startdate + '&end=' + enddate, true);
+        console.log("start: " + startdate + ", end: " + enddate);
+        xrh.setRequestHeader('Content-type', 'application/json');
+        xrh.send();
       }
     }
 
@@ -180,29 +209,39 @@ export default {
       let unOrdered;
       let listElement, nestedElement;
       let string;
+      let done;
+
+
       for (i in json.rows) {
         unOrdered = document.createElement('ul');
         unOrdered.setAttribute('class', 'jsonList');
+        unOrdered.setAttribute('id', 'jsonList');
         divElement.appendChild(unOrdered);
 
         listElement = document.createElement('li');
-        unOrdered.setAttribute('class', 'jsonListWeeks');
-        string = json.rows[i].week;
+        listElement.setAttribute('class', 'jsonListTasks');
+        if (json.rows[i].done == 1){
+          done = "DONE"
+        }
+        else {
+          done = "NOT DONE"
+        }
+        string = json.rows[i].description
+            + ", " + done;
         listElement.innerHTML = string;
         unOrdered.appendChild(listElement);
 
         nestedElement = document.createElement('ul');
-        unOrdered.setAttribute('class', 'jsonListTasks');
-        string = json.rows[i].description
-            + ', ' + json.rows[i].done;
+        nestedElement.setAttribute('class', 'jsonListWeeks');
+        string = json.rows[i].week;
         nestedElement.innerHTML = string;
         listElement.appendChild(nestedElement);
-
-        //unNestedElement = document.createElement('ul');
-
-        //nestedElement.appendChild(unNestedElement);
       }
+      document.getElementById("ok").style.display = 'inline-block';
+      document.getElementById("submit").style.display = 'none';
+
     }
+
 
     return {
       todoValue,
@@ -210,6 +249,7 @@ export default {
       newToDo,
       allTodos,
       max,
+      hideSaveMsg,
       addNewTodo,
       toggleDone,
       currentWeek,
@@ -221,17 +261,22 @@ export default {
       makeQuery,
       showDivAll,
       showDivAdd,
+      clearPage,
     };
   },
+
   mounted() {
     let add = document.getElementById('addDiv');
     let all = document.getElementById('allDiv');
     add.style.display = 'block';
     all.style.display = 'none';
   },
-};
+}
+;
 
 </script>
 <style>
 @import "app.css";
 </style>
+
+

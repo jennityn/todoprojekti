@@ -24,7 +24,7 @@ let mysql = require('mysql');
 let con = mysql.createConnection({
   host: 'localhost',
   user: 'root',
-  password: '',
+  password: 'TipuTopakka92',
   database: 'todo2',
 });
 
@@ -82,7 +82,7 @@ app.get('/api/todos', function(req, res) {
 
 app.post('/api/add/:id', urlencodedParser, function(req, res) {
   console.log('body: %j', req.body);
-  var todoId = req.params.todos.id;
+  var todoId = req.params.id;
   let jsonObj = req.body;
   let responseString = JSON.stringify(jsonObj);
 
@@ -92,11 +92,12 @@ app.post('/api/add/:id', urlencodedParser, function(req, res) {
     try {
       await query(addNew,todoId);
 
-      let sql = 'INSERT INTO task (week, description, done)'
-          + ' VALUES (?, ?, ?)';
+      let sql = 'UPDATE task SET week = ?, description = ?, done = ?'
+          + ' WHERE id = ?';
       await query(sql,[jsonObj.week,
         jsonObj.description,
-        jsonObj.done
+        jsonObj.done,
+          todoId
       ]);
 
       res.send('POST succesful ' + responseString);
@@ -107,89 +108,3 @@ app.post('/api/add/:id', urlencodedParser, function(req, res) {
 
   })();
 });
-
-
-/*
-
-
-
-
-
-
-
-
-
-
-
-/*app.use(function(req, res){
-  res.header("Access-Control_Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, ");
-  next();
-})*/
-
-/*let path = require('path');
-
-
-const query = util.promisify(con.query).bind(con);
-
-
-
-
-
-app.get('/events', function(req, res) {
-  res.sendFile(path.join(__dirname + '/server.html'));
-});
-
-app.get('api/location', function(req, res) {
-  console.log('Get location address');
-  let q = url.parse(req.url, true).query;
-  let params = q.locationName;
-  let location = q.locationName;
-  let alteredResult;
-  let string;
-  console.log('Parametrit:' + location);
-
-  let sql = 'SELECT Street_address, City, Zip, Country'
-      + ' FROM location'
-      +
-      ' WHERE Location_name = ?'
-      + ' GROUP BY Street_address'
-      + ' ORDER BY Street_address';
-
-  (async () => { // IIFE (Immediately Invoked Function Expression)
-    try {
-      const rows = await query(sql, [location]);
-      string = JSON.stringify(rows);
-      alteredResult = '{"numOfRows":' + rows.length + ',"rows":' + string + '}';
-      console.log(alteredResult);
-      console.log(rows);
-      res.send(alteredResult);
-
-    } catch (err) {
-      console.log('Database error!' + err);
-    } finally {
-      //conn.end();
-    }
-  })();
-});
-
-app.post('/api/testingevent', urlencodedParser, function(req, res) {
-  //console.log("Request body: " + req.body);
-  //console.log("Request body length: " + req.body.getLength);
-
-  console.log('body: %j', req.body);
-  // get JSON-object from the http-body
-  let jsonObj = req.body;
-  console.log('Arvo: ' + jsonObj.eventName);
-  // make updates to the database
-  let responseString = JSON.stringify(jsonObj);
-  res.send('POST successful: ' + responseString);
-});
-
-
-
-
-
-  console.log('Example app listening at http://%s:%s', host, port);
-});*/
-
