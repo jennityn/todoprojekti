@@ -25,7 +25,7 @@ let con = mysql.createConnection({
   host: 'localhost',
   user: 'root',
   password: '',
-  database: '',
+  database: 'todo2',
 });
 
 con.connect(error => {
@@ -34,6 +34,7 @@ con.connect(error => {
 });
 
 let util = require('util');
+const {re} = require('@babel/core/lib/vendor/import-meta-resolve');
 const query = util.promisify(con.query).bind(con);
 
 const PORT = process.env.PORT || 8081;
@@ -55,12 +56,12 @@ app.get('/api/todos', function(req, res) {
   let string;
   console.log('Parametrit:' + params);
 
-  let sql = 'SELECT week_id, description, done'
+  let sql = 'SELECT week, description, done'
       + ' FROM task'
       +
-      ' WHERE week_id >= ? and week_id >= ?'
+      ' WHERE week >= ? and week>= ?'
       + ' GROUP BY description'
-      + ' ORDER BY week_id';
+      + ' ORDER BY week';
 
   (async () => { // IIFE (Immediately Invoked Function Expression)
     try {
@@ -79,23 +80,26 @@ app.get('/api/todos', function(req, res) {
   })();
 });
 
-app.post('/api/add', urlencodedParser, function(req, res) {
+app.post('/api/add/:id', urlencodedParser, function(req, res) {
+  console.log('body: %j', req.body);
+  var todoId = req.params.todos.id;
   let jsonObj = req.body;
   let responseString = JSON.stringify(jsonObj);
 
-  let sql = 'INSERT INTO task (task_id, week_id, description, done)'
-      + ' VALUES (?, ?, ?, ?)';
+  let addNew = 'INSERT INTO task (id) VALUES (?)';
+
   (async () => {
     try {
-      await query(sql, [
-        jsonObj.taskId,
-        jsonObj.weekId,
-        jsonObj.taskDescription,
-        jsonObj.taskDone
-        ]);
+      await query(addNew,todoId);
+
+      let sql = 'INSERT INTO task (week, description, done)'
+          + ' VALUES (?, ?, ?)';
+      await query(sql,[jsonObj.week,
+        jsonObj.description,
+        jsonObj.done
+      ]);
 
       res.send('POST succesful ' + responseString);
-
     } catch (err) {
       console.log('Insertion into was unsuccessful!' + err);
       res.send('POST was not succesful ' + err);

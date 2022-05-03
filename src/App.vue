@@ -26,7 +26,7 @@
     <ul>
       <li v-for="(todo, index) in todos" :key="todo.id" class="todo">
         <div :class="{ done: todo.done }" @click="toggleDone(todo)">
-          {{ todo.content }}
+          {{ todo.description }}
         </div>
         <button class="removeItem" @click="removeToDo(index)">X</button>
       </li>
@@ -92,15 +92,30 @@ export default {
       return date;
     }
 
+    function currentWeek() {
+      let currentDate = new Date();
+      let startDate = new Date(currentDate.getFullYear(), 0, 1);
+      let days = Math.floor((currentDate - startDate) /
+          (24 * 60 * 60 * 1000));
+
+      let weekNumber = Math.ceil(
+          (currentDate.getDay() + 1 + days) / 7);
+
+      let stringWeek = "W"+weekNumber+"-"+currentDate.getFullYear();
+      return stringWeek;
+    }
+
     function addNewTodo() {
       if (this.newToDo.trim().length == 0) {
         return;
       }
       todos.value.push({
         id: Date.now(), //!!!HUOM!!!! tähän databaseen menevä id-muoto
+        week: currentWeek(),
         done: false,
-        content: newToDo.value,
+        description: newToDo.value,
       });
+      console.log(todos.value);
       newToDo.value = '';
       todoValue++;
     }
@@ -126,8 +141,8 @@ export default {
       xmlhttp.onreadystatechange = function() {
         if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
           json = JSON.parse(xmlhttp.responseText);
-            for (let i = 0; i < todoValue; i++) {
-              xmlhttp.open('POST', 'http://localhost:8081/api/add', true);
+            for (let i = 0; i < todos.value.length; i++) {
+              xmlhttp.open('POST', 'http://localhost:8081/api/add$%7Bid%7D', true);
               xmlhttp.send();
               i++;
             }
@@ -172,7 +187,7 @@ export default {
 
         listElement = document.createElement('li');
         unOrdered.setAttribute('class', 'jsonListWeeks');
-        string = json.rows[i].week_id;
+        string = json.rows[i].week;
         listElement.innerHTML = string;
         unOrdered.appendChild(listElement);
 
@@ -197,6 +212,7 @@ export default {
       max,
       addNewTodo,
       toggleDone,
+      currentWeek,
       removeToDo,
       saveAll,
       markAllDone,
