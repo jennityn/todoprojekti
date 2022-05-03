@@ -36,7 +36,7 @@
     &nbsp;&nbsp;&nbsp;
     <button class="massButtons" @click="removeAll">Remove All</button>
     &nbsp;&nbsp;&nbsp;
-    <button class="massButtons">Save</button>
+    <button class="massButtons" @click="saveAll">Save</button>
   </div>
 
   <div class="divs" id="allDiv">
@@ -70,6 +70,7 @@ export default {
     const newToDo = ref('');
     const todos = ref([]);
     const allTodos = ref([]);
+    let todoValue = 0;
 
     function showDivAdd() {
       let add = document.getElementById('addDiv');
@@ -101,6 +102,7 @@ export default {
         content: newToDo.value,
       });
       newToDo.value = '';
+      todoValue++;
     }
 
     function toggleDone(todo) {
@@ -117,6 +119,20 @@ export default {
 
     function removeAll() {
       todos.value = [];
+    }
+
+    function saveAll() {
+      let xmlhttp = new XMLHttpRequest();
+      xmlhttp.onreadystatechange = function() {
+        if (xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+          json = JSON.parse(xmlhttp.responseText);
+            for (let i = 0; i < todoValue; i++) {
+              xmlhttp.open('POST', 'http://localhost:8081/api/add', true);
+              xmlhttp.send();
+              i++;
+            }
+          }
+        }
     }
 
     function makeQuery() {
@@ -138,7 +154,7 @@ export default {
             }
           }
         };
-        xmlhttp.open('GET', 'http://localhost:8082/api/todos?start=' + startdate + '&end=' + enddate, true);
+        xmlhttp.open('GET', 'http://localhost:8081/api/todos?start=' + startdate + '&end=' + enddate, true);
         xmlhttp.send();
       }
     }
@@ -147,31 +163,34 @@ export default {
       let divElement = document.getElementById('divElement');
       let i;
       let unOrdered;
-      let listElement, nestedElement, unNestedElement;
+      let listElement, nestedElement;
       let string;
       for (i in json.rows) {
         unOrdered = document.createElement('ul');
-        unOrdered.setAttribute('class', 'del'); // mark all these dynamically created elements to be "deleted"
+        unOrdered.setAttribute('class', 'jsonList');
         divElement.appendChild(unOrdered);
 
         listElement = document.createElement('li');
-        listElement.setAttribute('class', 'del');
-        string = json.rows[i].Kuvaus;
+        unOrdered.setAttribute('class', 'jsonListWeeks');
+        string = json.rows[i].week_id;
         listElement.innerHTML = string;
         unOrdered.appendChild(listElement);
+
         nestedElement = document.createElement('ul');
-        nestedElement.setAttribute('class', 'del');
+        unOrdered.setAttribute('class', 'jsonListTasks');
+        string = json.rows[i].description
+            + ', ' + json.rows[i].done;
+        nestedElement.innerHTML = string;
         listElement.appendChild(nestedElement);
-        unNestedElement = document.createElement('li');
-        unNestedElement.setAttribute('class', 'del');
-        string = json.rows[i].taskId + ', ' + json.rows[i].weekId + ', ' + json.rows[i].taskDescription
-            + ', ' + json.rows[i].taskDone;
-        unNestedElement.innerHTML = string;
-        nestedElement.appendChild(unNestedElement);
+
+        //unNestedElement = document.createElement('ul');
+
+        //nestedElement.appendChild(unNestedElement);
       }
     }
 
     return {
+      todoValue,
       todos,
       newToDo,
       allTodos,
@@ -179,6 +198,7 @@ export default {
       addNewTodo,
       toggleDone,
       removeToDo,
+      saveAll,
       markAllDone,
       removeAll,
       currentDate,
@@ -196,8 +216,6 @@ export default {
 };
 
 </script>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
 <style>
-
 @import "app.css";
 </style>

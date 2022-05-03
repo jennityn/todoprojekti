@@ -2,11 +2,16 @@ const express = require('express');
 let bodyParser = require('body-parser');
 const cors = require('cors');
 const app = express();
-let corsOptions = {
-  origin: 'http://localhost:8081',
-};
 
-app.use(cors(corsOptions));
+
+app.use(function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Headers', '*');
+  res.header('Access-Control-Allow-Methods', '*');
+  next();
+});
+
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: true}));
 app.get('/', (req, res) => {
@@ -20,7 +25,7 @@ let con = mysql.createConnection({
   host: 'localhost',
   user: 'root',
   password: '',
-  database: 'todo2',
+  database: '',
 });
 
 con.connect(error => {
@@ -50,12 +55,12 @@ app.get('/api/todos', function(req, res) {
   let string;
   console.log('Parametrit:' + params);
 
-  let sql = 'SELECT task.week_id, task.description, task.done'
-      + ' FROM task, week'
+  let sql = 'SELECT week_id, description, done'
+      + ' FROM task'
       +
-      ' WHERE task.week_id >= ? and task.week_id >= ?'
-      + ' GROUP BY task.description '
-      + ' ORDER BY task.week_id';
+      ' WHERE week_id >= ? and week_id >= ?'
+      + ' GROUP BY description'
+      + ' ORDER BY week_id';
 
   (async () => { // IIFE (Immediately Invoked Function Expression)
     try {
@@ -92,13 +97,13 @@ app.post('/api/add', urlencodedParser, function(req, res) {
       res.send('POST succesful ' + responseString);
 
     } catch (err) {
-      console.log('Insertion into some (2) table was unsuccessful!' + err);
+      console.log('Insertion into was unsuccessful!' + err);
       res.send('POST was not succesful ' + err);
     }
 
   })();
-})
-;
+});
+
 
 /*
 
