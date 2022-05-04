@@ -110,9 +110,9 @@ export default {
           (24 * 60 * 60 * 1000));
 
       let weekNumber = Math.ceil(
-          (currentDate.getDay() + 1 + days) / 7);
+          (currentDate.getDay() + days) / 7);
 
-      let stringWeek = 'W' + weekNumber + '-' + currentDate.getFullYear();
+      let stringWeek = currentDate.getFullYear() +  '-W' + weekNumber;
       return stringWeek;
     }
 

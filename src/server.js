@@ -56,12 +56,12 @@ app.get('/api/todos', function(req, res) {
   let string;
   console.log('Parametrit:' + params);
 
-  let sql = 'SELECT week, description, done'
+  let sql = 'SELECT id, week, description, done'
       + ' FROM task'
       +
-      ' WHERE week >= ? and week>= ?'
+      ' WHERE week >= ? and week<= ?'
       + ' GROUP BY description'
-      + ' ORDER BY week';
+      + ' ORDER BY id';
 
   (async () => { // IIFE (Immediately Invoked Function Expression)
     try {
