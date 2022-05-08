@@ -19,7 +19,7 @@ body {
 #divElement {
     margin-top: 100px;
     margin-bottom: 0px;
-    font-size: 12px;
+    font-size: 17px;
 
 }
 
@@ -206,8 +206,8 @@ button {
 }
 
 .selectDate {
-    font-size: 25px;
-    width: 150px;
+    font-size: 20px;
+    width: 170px;
 }
 
 #submit {

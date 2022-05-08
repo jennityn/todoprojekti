@@ -61,6 +61,10 @@
 </template>
 <script>
 
+/**
+ * Käytössä Vue Composition API
+ */
+
 let json;
 
 import {ref} from 'vue';
@@ -78,11 +82,17 @@ export default {
     const allTodos = ref([]);
     let todoValue = 0;
 
+    /** @function hideSaveMsg
+     * piilottaa tallennuksen onnistumisviestin
+     */
     function hideSaveMsg(){
       document.getElementById("saveMsg").style.display = 'none';
       document.getElementById("saveOk").style.display = 'none';
     }
 
+    /** @function showDivAdd
+     * asettaa tehtävälistan näkyviin ja piilottaa viikkohistorian
+     */
     function showDivAdd() {
       let add = document.getElementById('addDiv');
       let all = document.getElementById('allDiv');
@@ -90,6 +100,9 @@ export default {
       all.style.display = 'none';
     }
 
+    /** @function showDivAll
+     * asettaa viikkohistorian näkyviin ja piilottaa tehtävälistan
+     */
     function showDivAll() {
       let add = document.getElementById('addDiv');
       let all = document.getElementById('allDiv');
@@ -97,12 +110,20 @@ export default {
       add.style.display = 'none';
     }
 
+    /** @function currentDate
+     * luo merkkijonoesityksen päivämäärälle
+     * @returns {string} päivämäärä
+     */
     function currentDate() {
       const current = new Date();
       const date = current.getDate() + '-' + (current.getMonth() + 1) + '-' + current.getFullYear();
       return date;
     }
 
+    /** @function currentWeek
+     * luo merkkijonoesityksen viikkonumerolle
+     * @returns {string} viikkonumero
+     */
     function currentWeek() {
       let currentDate = new Date();
       let startDate = new Date(currentDate.getFullYear(), 0, 1);
@@ -116,6 +137,9 @@ export default {
       return stringWeek;
     }
 
+    /** @function addNewTodo
+     * lisää uuden tehtävän tehtävälistaan
+     */
     function addNewTodo() {
       if (this.newToDo.trim().length == 0) {
         return;
@@ -132,23 +156,40 @@ export default {
       console.log('Current task count in list: ' + todoValue);
     }
 
+    /** @functiontoggleDone
+     * vaihtaa tehtävän tilan tehdyksi tai tekemättömäksi
+     * @param todo muutettava tehtävä
+     */
     function toggleDone(todo) {
       todo.done = !todo.done;
     }
 
+    /** @function removeTodo
+     * poistaa tehtävän tehtävälistalta
+     * @param index tehtävän indeksinumero
+     */
     function removeToDo(index) {
       todos.value.splice(index, 1);
       todoValue--;
     }
 
+    /** @functionmarkAllDone
+     * vaihtaa kaikkien tehtävälistan tehtävien tilan tehdyksi
+     */
     function markAllDone() {
       todos.value.forEach((todo) => todo.done = true);
     }
 
+    /** @function removeAll
+     * poistaa kaikki päivän tehtävät tehtävälistalta
+     */
     function removeAll() {
       todos.value = [];
     }
 
+    /** @function saveAll
+     * tallentaa kaikki päivän tehtävät ja tehtävien tiedot tietokantaan
+     */
     function saveAll() {
       let xhr = [];
       for (let i = 0; i < todoValue; i++){
@@ -170,12 +211,18 @@ export default {
       todos.value = [];
     }
 
+    /** @function clearPage
+     * tyhjää sivun
+     */
     function clearPage() {
       document.getElementById("divElement").innerHTML ="";
       document.getElementById("ok").style.display = 'none';
       document.getElementById("submit").style.display = 'inline-block';
     }
 
+    /** @function makeQuery
+     * tekee tietokantakyselyn halutuille viikkonumeroille ja palauttaa haetut tiedot JSON-sanomana
+     */
     function makeQuery() {
       let startdate = document.getElementById('startingDate').value;
       let enddate = document.getElementById('endingDate').value;
@@ -203,6 +250,11 @@ export default {
       }
     }
 
+    /** @function showList
+     * luo palautetun JSON-sanoman mukaisen listan tietokannasta saatujen tietojen perusteella ja luo listan osille HTML-elementit,
+     *  sekä luo ja asettelee elementit sivustolle
+     * @param json tietokannasta palautettu JSON-lista
+     */
     function showList(json) {
       let divElement = document.getElementById('divElement');
       let i;

@@ -3,7 +3,9 @@ let bodyParser = require('body-parser');
 const cors = require('cors');
 const app = express();
 
-
+/**
+ * vastauksien otsakkeiden määritys
+ */
 app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Headers', '*');
@@ -20,6 +22,17 @@ app.get('/', (req, res) => {
 
 let url = require('url');
 
+/**
+ * tietokantayhteyden luominen
+ * @type {{createConnection?: function((Object|string)): Connection,
+ * createPool?: function((Object|string)): Pool,
+ * createPoolCluster?: function(Object=): PoolCluster,
+ * createQuery?: function(string, Array=, Function=): Query,
+ * escape?: function(*, boolean=, string=): string,
+ * escapeId?: function(*, boolean=): string,
+ * format?: function(string, Array=, boolean=, string=): string,
+ * raw?: function(string): *, Types?: *}}
+ */
 let mysql = require('mysql');
 let con = mysql.createConnection({
   host: 'localhost',
@@ -37,6 +50,10 @@ let util = require('util');
 const {re} = require('@babel/core/lib/vendor/import-meta-resolve');
 const query = util.promisify(con.query).bind(con);
 
+/**
+ * serverin kuunteleman portin määritys
+ * @type {string|number}
+ */
 const PORT = process.env.PORT || 8081;
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}.`);
@@ -46,6 +63,14 @@ let urlencodedParser = bodyParser.urlencoded({extended: false});
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(bodyParser.json());
 
+/**
+ * Tietokantakysely, joka palauttaa kaikki käyttäjän tallentamat tehtävät määrätyltä ajalta
+ *
+ * @async
+ * @param {string} q - URL jota käytetään kyselyn muodostukseen
+ * @param startDate käyttäjän syötteetsä haettu aloituspäivämäärä
+ * @param endDate käyttäjän syötteestä haettu lopetuspäivämäärä
+ */
 app.get('/api/todos', function(req, res) {
   console.log('Get tasks from a certain period');
   let q = url.parse(req.url, true).query;
@@ -80,6 +105,15 @@ app.get('/api/todos', function(req, res) {
   })();
 });
 
+
+/**
+ * Lähettää aj tallentaa tietokantaan käyttäjän tallentamat tehtävät
+ *
+ * @async
+ * @param {string} q - URL jota käytetään kyselyn muodostukseen
+ * @param startDate käyttäjän syötteetsä haettu aloituspäivämäärä
+ * @param endDate käyttäjän syötteestä haettu lopetuspäivämäärä
+ */
 app.post('/api/add/:id', urlencodedParser, function(req, res) {
   console.log('body: %j', req.body);
   var todoId = req.params.id;
